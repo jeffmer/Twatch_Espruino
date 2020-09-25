@@ -5,6 +5,7 @@
     var y = 0;
     function getBattery(){
         var v = AXP202.batV();
+        v = v<3.7?3.7:v;
         return Math.floor((v-3.7)*200);
     }
 
