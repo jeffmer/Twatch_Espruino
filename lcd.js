@@ -83,6 +83,8 @@ function ST7789() {
             colstart: XOFF,
             rowstart: YOFF
         });
+        g.lcd_sleep = function(){dc.reset(); spi.write(0x10,ce);};
+        g.lcd_wake = function(){dc.reset(); spi.write(0x11,ce);};
         dispinit(spi, dc, ce, rst, ()=>{g.clear();});
         return g;
     }

@@ -58,7 +58,12 @@ var AXP202 = {
     }, 
     batA:() => {
         return AXP202.batChargeA() - AXP202.batDisChargeA();
-    } ,
+    },
+    supplyA:() => {
+        var hv = AXP202.readByte(0x5C);
+        var lv = AXP202.readByte(0x5D);
+        return ((hv << 4) | (lv & 0x0F)) * 0.375;
+    }, 
     init:() =>{
         AXP202.setLEDoff();
         AXP202.setCharge(300); // 300 ma is max  charge

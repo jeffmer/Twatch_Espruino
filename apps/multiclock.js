@@ -32,7 +32,6 @@ function startdraw() {
   face.init();
   intervalRefSec = setInterval(face.tick,1000);
   widbat();
-  setInterval(widbat,10000);
 }
 
 function setButtons(){
@@ -51,9 +50,19 @@ g.clear();
 startdraw();
 setButtons();
 
-setTimeout(()=>{
-    g.clear();
-    AXP202.setLD02(0);
-    ESP32.deepSleep(0,D38,0);
-},20000);
+function sleepAfter() {
+  setTimeout(()=>{
+    brightness(0);
+    g.lcd_sleep();
+    if (intervalRefSec) clearInterval(intervalRefSec);
+    ESP32.deepSleep(-1,D38,0); //light sleep
+    g.lcd_wake(1);
+    brightness(0.5);
+    intervalRefSec = setInterval(face.tick,1000);
+    setTimeout(()=>{widbat();},200);
+    sleepAfter();
+  },20000);
+}
+
+sleepAfter();
 
