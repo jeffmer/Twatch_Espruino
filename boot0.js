@@ -91,6 +91,8 @@ if (require("Storage").read("lcd.js")){
     eval(require("Storage").read("lcd.js"));
     var g = ST7789();
     brightness(0.5);
+    ESP32.adcPower(false);  //power saving
+    ESP32.wifiStart(false);
     setTimeout(() => {
         if (!TOUCH_PIN.read()){
             g.setRotation(0);

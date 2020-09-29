@@ -61,7 +61,7 @@ function sleepAfter() {
     intervalRefSec = setInterval(face.tick,1000);
     setTimeout(()=>{widbat();},200);
     sleepAfter();
-  },20000);
+  },10000);
 }
 
 sleepAfter();
