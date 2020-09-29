@@ -54,9 +54,9 @@ function sleepAfter() {
   setTimeout(()=>{
     brightness(0);
     g.lcd_sleep();
-    if (intervalRefSec) clearInterval(intervalRefSec);
+    stopdraw();
     ESP32.deepSleep(-1,D38,0); //light sleep
-    g.lcd_wake(1);
+    g.lcd_wake();
     brightness(0.5);
     intervalRefSec = setInterval(face.tick,1000);
     setTimeout(()=>{widbat();},200);

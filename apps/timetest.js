@@ -20,7 +20,7 @@ function time_image(){
     console.log("Time to Draw Image: "+time+"ms");
 }
 
-Bangle.on('swipe',(dir)=>{
+FT5206.on('swipe',(dir)=>{
     if(dir<0)
         time_fill();
     else 
