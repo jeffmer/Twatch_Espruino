@@ -67,6 +67,7 @@
     function drawAll() {
         secondDate = minuteDate = new Date();
         // draw seconds
+        buf.clear();
         buf.setColor(1,1,1);
         for (let i=0;i<60;i++)
             seconds(360*i/60, 100);

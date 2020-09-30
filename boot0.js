@@ -46,6 +46,11 @@ var AXP202 = {
         const ADCLSB = 1.1 / 1000.0;
         return v * ADCLSB;
     },
+    batPercent:() => {
+        var v = AXP202.readByte(0xB9);
+        if (!(v & 0x80)) return v & 0x7F;
+        return 0;
+    },
     batChargeA:() => {
         var hv = AXP202.readByte(0x7A);
         var lv = AXP202.readByte(0x7B);
@@ -64,7 +69,7 @@ var AXP202 = {
         var lv = AXP202.readByte(0x5D);
         return ((hv << 4) | (lv & 0x0F)) * 0.375;
     }, 
-    init:() =>{
+    init:() => {
         AXP202.setLEDoff();
         AXP202.setCharge(300); // 300 ma is max  charge
         AXP202.setLD02(1); //g power on
@@ -87,18 +92,45 @@ if (require("Storage").read("touch.js")){
     eval(require("Storage").read("touch.js"));
 }
 
+var TWATCH = {};
+var SET_ACTIVE_TIME=5;
+var ACTIVE_TIME = SET_ACTIVE_TIME;
+var powInterval;
+
+function power_man(){
+    ACTIVE_TIME--;
+    if (ACTIVE_TIME<=0){
+        powInterval=clearInterval(powInterval);
+        TWATCH.emit("sleep",true);
+        brightness(0);
+        g.lcd_sleep();
+        ESP32.deepSleep(-1,D38,0); //light sleep
+        g.lcd_wake();
+        TWATCH.emit("sleep",false);
+        brightness(0.3);
+        ACTIVE_TIME=SET_ACTIVE_TIME;
+        powInterval=setInterval(power_man,1000);  
+    }
+}
+
+function init_power_man(){
+    FT5206.on('touch',(p)=>{ACTIVE_TIME=SET_ACTIVE_TIME;});
+    powInterval=setInterval(power_man,1000);
+}
+
 if (require("Storage").read("lcd.js")){
     eval(require("Storage").read("lcd.js"));
     var g = ST7789();
-    brightness(0.5);
+    brightness(0.3);
     ESP32.adcPower(false);  //power saving
     ESP32.wifiStart(false);
+    ESP32.setCPUfreq(2); // 160MHz
     setTimeout(() => {
         if (!TOUCH_PIN.read()){
             g.setRotation(0);
             g.setColor(0xFFFF);
             g.setFont("6x8");
-            g.drawString("T-Watch 2020 Espruino",20,100);
+            g.drawString("T-Watch 2020 Espruino "+process.version,20,100);
             var d = new Date();
             g.drawString(d.toString().substr(0,15),20,120);
             g.flip();
@@ -111,6 +143,7 @@ if (require("Storage").read("lcd.js")){
             },1000);
             */ 
         } else {
+            init_power_man();
             if (require("Storage").read("app.js")){
                 eval(require("Storage").read("app.js"));
             }

@@ -28,10 +28,10 @@ function RTC(){
             Int2Bcd(t.secs),
             Int2Bcd(t.mins),
             Int2Bcd(t.hrs),
-            Int2Bcd(d.day),
-            Int2Bcd(d.dofw),
-            Int2Bcd(d.month),
-            Int2Bcd(d.year)]);
+            Int2Bcd(t.day),
+            Int2Bcd(t.dofw),
+            Int2Bcd(t.month),
+            Int2Bcd(t.year)]);
         I2C1.writeTo(0x51,0x02,buf);
     }
 

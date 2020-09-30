@@ -9,7 +9,7 @@ function stopdraw() {
 }
 
 function widbat(){
-    var x = 180;
+    var x = 140;
     var y = 0;
     function getBattery(){
         var v = AXP202.batV();
@@ -17,12 +17,15 @@ function widbat(){
         return Math.floor((v-3.7)*200);
     }
     var s = 39;
+    g.reset();
     g.setColor(0xFFFF);
     g.fillRect(x,y+2,x+s-4,y+21);
     g.clearRect(x+2,y+4,x+s-6,y+19);
     g.fillRect(x+s-3,y+10,x+s,y+14);
     g.setColor(0x07E0).fillRect(x+4,y+6,x+4+getBattery()*(s-12)/100,y+17);
     g.setColor(0xFFFF);
+    g.setFont("6x8",2);
+    g.drawString(AXP202.batPercent().toString()+"%",x+44,y+4,true);
     g.flip();
 }
 
@@ -50,19 +53,6 @@ g.clear();
 startdraw();
 setButtons();
 
-function sleepAfter() {
-  setTimeout(()=>{
-    brightness(0);
-    g.lcd_sleep();
-    stopdraw();
-    ESP32.deepSleep(-1,D38,0); //light sleep
-    g.lcd_wake();
-    brightness(0.5);
-    intervalRefSec = setInterval(face.tick,1000);
-    setTimeout(()=>{widbat();},200);
-    sleepAfter();
-  },10000);
-}
+TWATCH.on("sleep",(b)=>{if (b) stopdraw(); else startdraw();});
 
-sleepAfter();
 
