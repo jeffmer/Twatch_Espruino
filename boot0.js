@@ -92,31 +92,30 @@ if (require("Storage").read("touch.js")){
     eval(require("Storage").read("touch.js"));
 }
 
-var TWATCH = {};
-var SET_ACTIVE_TIME=5;
-var ACTIVE_TIME = SET_ACTIVE_TIME;
-var powInterval;
-
-function power_man(){
-    ACTIVE_TIME--;
-    if (ACTIVE_TIME<=0){
-        powInterval=clearInterval(powInterval);
-        TWATCH.emit("sleep",true);
-        brightness(0);
-        g.lcd_sleep();
-        ESP32.deepSleep(-1,D38,0); //light sleep
-        g.lcd_wake();
-        TWATCH.emit("sleep",false);
-        brightness(0.3);
-        ACTIVE_TIME=SET_ACTIVE_TIME;
-        powInterval=setInterval(power_man,1000);  
-    }
-}
-
-function init_power_man(){
-    FT5206.on('touch',(p)=>{ACTIVE_TIME=SET_ACTIVE_TIME;});
-    powInterval=setInterval(power_man,1000);
-}
+var TWATCH = {
+     ON_TIME:5,
+     time_left:this.ON_TIME,
+     powInterval:null,
+     power_man:()=>{
+         this.time_left--;
+         if (this.time_left<=0){
+            this.powInterval=clearInterval(this.powInterval);
+            TWATCH.emit("sleep",true);
+            brightness(0);
+            g.lcd_sleep();
+            ESP32.deepSleep(-1,D38,0); //light sleep
+            g.lcd_wake();
+            TWATCH.emit("sleep",false);
+            brightness(0.3);
+            this.time_left=this.ON_TIME;
+            this.powInterval=setInterval(TWATCH.power_man,1000);  
+         }
+     },
+     init_power_man:()=>{
+        FT5206.on('touch',(p)=>{this.time_left=this.ON_TIME;});
+        this.powInterval=setInterval(TWATCH.power_man,1000);
+     }
+  }
 
 if (require("Storage").read("lcd.js")){
     eval(require("Storage").read("lcd.js"));
@@ -143,7 +142,7 @@ if (require("Storage").read("lcd.js")){
             },1000);
             */ 
         } else {
-            init_power_man();
+            TWATCH.init_power_man();
             if (require("Storage").read("app.js")){
                 eval(require("Storage").read("app.js"));
             }
