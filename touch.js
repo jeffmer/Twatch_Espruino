@@ -30,7 +30,8 @@ var FT5206 = {
                  y:((this._data[5]&0x0F)<<8)|this._data[6]
                };
     },
-    enable:()=>{FT5206.writeByte(0xA4, 0);}
+    enable:()=>{FT5206.writeByte(0xA4, 0);},
+    monitorMode:()=>{FT5206.writeByte(0xA5, 1);}
 };
 
 setWatch(()=> {
@@ -58,6 +59,7 @@ setWatch(()=> {
 },TOUCH_PIN,{repeat:true,edge:"falling",debounce:25});
 
 FT5206.enable();
+FT5206.monitorMode();
 
 /*
 FT5206.on("touch", (p)=>{
