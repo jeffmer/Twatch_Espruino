@@ -19,7 +19,7 @@ function RTC(){
                 hrs : Bcd2Int(buf[2]&0x3f),
                 day:  Bcd2Int(buf[3]&0x3f),
                 dofw: Bcd2Int(buf[4]&0x07),
-                month : Bcd2Int(buf[5]&0x1f), 
+                month:Bcd2Int(buf[5]&0x1f), 
                 year: Bcd2Int(buf[6]&0x7f)+2000};
     }
 

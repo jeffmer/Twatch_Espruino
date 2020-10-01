@@ -18,6 +18,7 @@ var AXP202 = {
     setExten:(state) => {return AXP202.setPower(0,state);},
     setDCDC2:(state) => {return AXP202.setPower(4,state);},
     setLD04:(state) => {return AXP202.setPower(3,state);},
+    setLD03:(state) => {return AXP202.setPower(6,state);},
     setCharge:(ma) => {
         var val = AXP202.readByte(0x33);
         val &= 0b11110000;
@@ -36,8 +37,10 @@ var AXP202 = {
         val = en? val|mask : val & ~mask;
         AXP202.writeByte(0x82,val);
     },
-    deepSleep:(usec,pin)=>{
-        ESP32.deepSleep(usec,pin);
+    setLD03Mode:(m)=>{
+        var val = AXP202.readByte(0x29);
+        if (m) val|=0x80; else val&=0x7F;
+        AXP202.writeByte(0x29,val);
     },
     batV:() => {
         I2C1.writeTo(0x35,0x78);
@@ -75,6 +78,8 @@ var AXP202 = {
         AXP202.setLD02(1); //g power on
         AXP202.setExten(0);
         AXP202.setDCDC2(0);
+        AXP202.setLD03Mode(1);
+        AXP202.setLD03(0);
         AXP202.setLD04(0);
         AXP202.adc1Enable(0xCD,true);
     }
@@ -104,8 +109,11 @@ function init_power_man() {
            powInterval=clearInterval(powInterval);
            TWATCH.emit("sleep",true);
            brightness(0);
+           ESP32.adcPower(false);  //power saving
+           ESP32.setCPUfreq(1); // 80MHz
            g.lcd_sleep();
            ESP32.deepSleep(-1,D38,0); //light sleep
+           ESP32.setCPUfreq(3); // 240MHz
            g.lcd_wake();
            TWATCH.emit("sleep",false);
            brightness(0.3);
@@ -121,9 +129,7 @@ if (require("Storage").read("lcd.js")){
     eval(require("Storage").read("lcd.js"));
     var g = ST7789();
     brightness(0.3);
-    ESP32.adcPower(false);  //power saving
     ESP32.wifiStart(false);
-    ESP32.setCPUfreq(2); // 160MHz
     setTimeout(() => {
         if (!TOUCH_PIN.read()){
             g.setRotation(0);
