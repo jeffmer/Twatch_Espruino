@@ -10,7 +10,7 @@ var AXP202 = {
     },
     setPower:(bus,state) => {
         var buf = AXP202.readByte(0x12);
-        var data = state?(buf | 0x041<<bus):(buf & ~(0x01<<bus));
+        var data = state?(buf | 0x01<<bus):(buf & ~(0x01<<bus));
         if (state) data|=2; //AXP202 DCDC3 force
         AXP202.writeByte(0x12,data);
     },
