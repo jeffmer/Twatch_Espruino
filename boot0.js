@@ -138,28 +138,21 @@ if (require("Storage").read("lcd.js")){
     brightness(0.3);
     ESP32.wifiStart(false);
     setTimeout(() => {
-        if (!TOUCH_PIN.read()){
-            g.setRotation(0);
-            g.setColor(0xFFFF);
-            g.setFont("6x8");
-            g.drawString("T-Watch 2020 Espruino "+process.version,20,100);
-            var d = new Date();
-            g.drawString(d.toString().substr(0,15),20,120);
-            g.flip();
-            /*
-            setInterval(()=>{
-                var d = new Date();
-                g.drawString(d.toString().split(" ")[4],190,0,true);
-                g.drawString(AXP202.batV().toFixed(1)+"V",210,230,true);
-                g.drawString(AXP202.batA().toFixed(1)+"ma   ",0,230,true);           
-            },1000);
-            */ 
-        } else {
-            init_power_man();
-            if (require("Storage").read("app.js")){
+        g.setRotation(0);
+        g.setColor(0xFFFF);
+        g.setFont("6x8");
+        g.drawString("T-Watch 2020 Espruino "+process.version,20,100);
+        var d = new Date();
+        g.drawString(d.toString().substr(0,15),20,120);
+        g.flip();
+        setTimeout(() => {
+          if (TOUCH_PIN.read()){
+             if (require("Storage").read("app.js")){
+                init_power_man();
                 eval(require("Storage").read("app.js"));
-            }
-        }
+             }
+          }
+        },2000);
     },200);
 }
 
