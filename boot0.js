@@ -42,6 +42,11 @@ var AXP202 = {
         if (m) val|=0x80; else val&=0x7F;
         AXP202.writeByte(0x29,val);
     },
+    setDCDC3Voltage:(mv)=>{
+        if (mv<700 || mv>3500) return;
+        var val = (mv-700)/25;
+        AXP202.writeByte(0x27,val);
+    },
     batV:() => {
         I2C1.writeTo(0x35,0x78);
         var d = I2C1.readFrom(0x35,2);
@@ -109,10 +114,12 @@ function init_power_man() {
            powInterval=clearInterval(powInterval);
            TWATCH.emit("sleep",true);
            brightness(0);
+           g.lcd_sleep();
            ESP32.adcPower(false);  //power saving
            ESP32.setCPUfreq(1); // 80MHz
-           g.lcd_sleep();
+           AXP202.setDCDC3Voltage(2700);
            ESP32.deepSleep(-1,D38,0); //light sleep
+           AXP202.setDCDC3Voltage(3300);
            ESP32.setCPUfreq(3); // 240MHz
            g.lcd_wake();
            TWATCH.emit("sleep",false);

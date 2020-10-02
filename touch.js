@@ -18,6 +18,9 @@ var FT5206 = {
     threshold:(v) => {
         FT5206.writeByte(0x80,v);
     },
+    setMonitorTime:(secs) => {
+        FT5206.writeByte(0x87,secs);
+    },
     touched:()=>{
         var b = FT5206.readBytes(0x02,1)[0];
         return b>2?0:b;
@@ -60,6 +63,7 @@ setWatch(()=> {
 
 FT5206.enable();
 FT5206.monitorMode();
+FT5206.setMonitorTime(5);
 
 /*
 FT5206.on("touch", (p)=>{
