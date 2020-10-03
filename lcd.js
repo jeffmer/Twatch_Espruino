@@ -97,7 +97,7 @@ function ST7789() {
 
 //screen brightness function
 function brightness(v) {
-    v<0?0:v>1?1:v;
+    v=v<0?0:v>1?1:v;
     analogWrite(D12,v);
 }
 
