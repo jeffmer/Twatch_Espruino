@@ -91,6 +91,8 @@ var AXP202 = {
 }
 
 AXP202.init();
+ESP32.wifiStart(false); // turn off wifi & bluetooth to save power
+//ESP32.bleStart(false);
 
 if (require("Storage").read("rtc.js")){
     eval(require("Storage").read("rtc.js"));
@@ -117,7 +119,7 @@ function init_power_man() {
            g.lcd_sleep();
            ESP32.adcPower(false);  //power saving
            ESP32.wifiStart(false);
-           ESP32.bleStart(false);
+           //ESP32.bleStart(false);
            ESP32.setCPUfreq(1); // 80MHz
            AXP202.setDCDC3Voltage(2700);
            ESP32.deepSleep(-1,D38,0); //light sleep
