@@ -116,6 +116,8 @@ function init_power_man() {
            brightness(0);
            g.lcd_sleep();
            ESP32.adcPower(false);  //power saving
+           ESP32.wifiStart(false);
+           ESP32.bleStart(false);
            ESP32.setCPUfreq(1); // 80MHz
            AXP202.setDCDC3Voltage(2700);
            ESP32.deepSleep(-1,D38,0); //light sleep
@@ -136,7 +138,6 @@ if (require("Storage").read("lcd.js")){
     eval(require("Storage").read("lcd.js"));
     var g = ST7789();
     brightness(0.3);
-    ESP32.wifiStart(false);
     setTimeout(() => {
         g.setRotation(0);
         g.setColor(0xFFFF);
