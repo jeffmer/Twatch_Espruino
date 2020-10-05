@@ -6,6 +6,7 @@ var intervalRefSec;
 
 function stopdraw() {
   if(intervalRefSec) {intervalRefSec=clearInterval(intervalRefSec);}
+  g.clear();
 }
 
 function widbat(){
@@ -30,7 +31,6 @@ function widbat(){
 }
 
 function startdraw() {
-  g.clear();
   g.reset();
   face.init();
   intervalRefSec = setInterval(face.tick,1000);

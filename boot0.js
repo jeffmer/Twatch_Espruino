@@ -120,14 +120,15 @@ function init_power_man() {
            ESP32.adcPower(false);  //power saving
            ESP32.wifiStart(false);
            //ESP32.bleStart(false);
-           ESP32.setCPUfreq(1); // 80MHz
+           //ESP32.setCPUfreq(1); // 80MHz
            AXP202.setDCDC3Voltage(2700);
            ESP32.deepSleep(-1,D38,0); //light sleep
            AXP202.setDCDC3Voltage(3300);
-           ESP32.setCPUfreq(3); // 240MHz
+           //ESP32.setCPUfreq(3); // 240MHz
            g.lcd_wake();
+           if(rtc) rtc.setSYS();
            TWATCH.emit("sleep",false);
-           brightness(0.3);
+           setTimeout(()=>{brightness(0.3);},200);
            time_left=ON_TIME;
            powInterval=setInterval(power_man,1000); 
         }
