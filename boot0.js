@@ -144,7 +144,7 @@ if (require("Storage").read("lcd.js")){
     var g = ST7789();
     brightness(0.3);
     setTimeout(() => {
-        if (!TOUCH_PIN.read()){
+        if (TOUCH_PIN.read()){
             g.setRotation(0);
             g.setColor(0xFFFF);
             g.setFont("6x8");
@@ -155,8 +155,6 @@ if (require("Storage").read("lcd.js")){
             init_power_man();
             var f = require("Storage");
             var execapp = f.read(".exec");
-            if (execapp=="clock.app.js") f.write(".exec","calc.app.js");
-            else f.write(".exec","clock.app.js");
             eval(f.read(execapp));
         }
     },200);
