@@ -137,26 +137,28 @@ function init_power_man() {
     powInterval=setInterval(power_man,1000);
 }
 
+FT5206.on("longtouch", ()=> {reset();});
+
 if (require("Storage").read("lcd.js")){
     eval(require("Storage").read("lcd.js"));
     var g = ST7789();
     brightness(0.3);
     setTimeout(() => {
-        g.setRotation(0);
-        g.setColor(0xFFFF);
-        g.setFont("6x8");
-        g.drawString("T-Watch 2020 Espruino "+process.version,20,100);
-        var d = new Date();
-        g.drawString(d.toString().substr(0,15),20,120);
-        g.flip();
-        setTimeout(() => {
-          if (TOUCH_PIN.read()){
-             if (require("Storage").read("app.js")){
-                init_power_man();
-                eval(require("Storage").read("app.js"));
-             }
-          }
-        },2000);
+        if (!TOUCH_PIN.read()){
+            g.setRotation(0);
+            g.setColor(0xFFFF);
+            g.setFont("6x8");
+            g.drawString("T-Watch 2020 Espruino "+process.version,20,100);
+            var d = new Date();
+            g.drawString(d.toString().substr(0,15),20,120);
+        } else {
+            init_power_man();
+            var f = require("Storage");
+            var execapp = f.read(".exec");
+            if (execapp=="clock.app.js") f.write(".exec","calc.app.js");
+            else f.write(".exec","clock.app.js");
+            eval(f.read(execapp));
+        }
     },200);
 }
 

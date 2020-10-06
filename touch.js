@@ -8,6 +8,7 @@ var FT5206 = {
     _first: undefined,
     _last:undefined,
     _scan: undefined,
+    _count: -9999,
     writeByte:(a,d) => { 
         I2C2.writeTo(0x38,a,d);
     }, 
@@ -42,10 +43,17 @@ setWatch(()=> {
     if (p) {
         FT5206._first = p;
         FT5206.emit("touch",p);
+        FT5206._count = 0;
         FT5206._scan = setInterval(()=>{
+           ++FT5206._count;
+           if (FT5206._count>20) {
+               FT5206.emit("longtouch");
+               FT5206._count = -9999;
+           }        
            var q =  FT5206.getXY();
            if (q) FT5206._last = q;
            else {
+              FT5206.emit("endtouch");
               clearInterval(FT5206._scan);
               if (!FT5206._last) return;
               var xm = FT5206._last.x - FT5206._first.x;
@@ -57,7 +65,7 @@ setWatch(()=> {
               else dir = ym>0 ? dir : -dir;
               FT5206.emit("swipe",dir);
            }
-        });
+        },100);
     }
 },TOUCH_PIN,{repeat:true,edge:"falling",debounce:25});
 

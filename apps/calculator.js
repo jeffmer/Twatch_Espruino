@@ -10,7 +10,7 @@ Graphics.prototype.setFont7x11Numeric7Seg = function() {
   this.setFontCustom(atob("ACAB70AYAwBgC94AAAAAAAAAAB7wAAPQhhDCGELwAAAAhDCGEMIXvAAeACAEAIAQPeAA8CEMIYQwhA8AB70IYQwhhCB4AAAIAQAgBAB7wAHvQhhDCGEL3gAPAhDCGEMIXvAAe9CCEEIIQPeAA94EIIQQghA8AB70AYAwBgCAAAAHgQghBCCF7wAHvQhhDCGEIAAAPehBCCEEIAAAAA=="), 46, atob("AgAHBwcHBwcHBwcHAAAAAAAAAAcHBwcHBw=="), 11);
 };
 
-var DEFAULT_SELECTION = '5';
+var DEFAULT_SELECTION = '0';
 var BOTTOM_MARGIN = 10;
 var RIGHT_MARGIN = 20;
 var COLORS = {
@@ -22,95 +22,75 @@ var COLORS = {
 
 var keys = {
   '0': {
-    xy: [0, 200, 120, 240],
-    trbl: '2.00'
+    xy: [0, 200, 120, 240]
   },
   '.': {
-    xy: [120, 200, 180, 240],
-    trbl: '3=.0'
+    xy: [120, 200, 180, 240]
   },
   '=': {
     xy: [181, 200, 240, 240],
-    trbl: '+==.',
     color: COLORS.OPERATOR
   },
   '1': {
-    xy: [0, 160, 60, 200],
-    trbl: '4201'
+    xy: [0, 160, 60, 200]
   },
   '2': {
-    xy: [60, 160, 120, 200],
-    trbl: '5301'
+    xy: [60, 160, 120, 200]
   },
   '3': {
-    xy: [120, 160, 180, 200],
-    trbl: '6+.2'
+    xy: [120, 160, 180, 200]
   },
   '+': {
     xy: [181, 160, 240, 200],
-    trbl: '-+=3',
     color: COLORS.OPERATOR
   },
   '4': {
-    xy: [0, 120, 60, 160],
-    trbl: '7514'
+    xy: [0, 120, 60, 160]
   },
   '5': {
-    xy: [60, 120, 120, 160],
-    trbl: '8624'
+    xy: [60, 120, 120, 160]
   },
   '6': {
-    xy: [120, 120, 180, 160],
-    trbl: '9-35'
+    xy: [120, 120, 180, 160]
   },
   '-': {
     xy: [181, 120, 240, 160],
-    trbl: '*-+6',
     color: COLORS.OPERATOR
   },
   '7': {
-    xy: [0, 80, 60, 120],
-    trbl: 'R847'
+    xy: [0, 80, 60, 120]
   },
   '8': {
-    xy: [60, 80, 120, 120],
-    trbl: 'N957'
+    xy: [60, 80, 120, 120]
   },
   '9': {
-    xy: [120, 80, 180, 120],
-    trbl: '%*68'
+    xy: [120, 80, 180, 120]
   },
   '*': {
     xy: [181, 80, 240, 120],
-    trbl: '/*-9',
     color: COLORS.OPERATOR
   },
   'R': {
     xy: [0, 40, 60, 79],
-    trbl: 'RN7R',
     color: COLORS.SPECIAL,
     val: 'AC'
   },
   'N': {
     xy: [60, 40, 120, 79],
-    trbl: 'N%8R',
     color: COLORS.SPECIAL,
     val: '+/-'
   },
   '%': {
     xy: [120, 40, 180, 79],
-    trbl: '%/9N',
     color: COLORS.SPECIAL
   },
   '/': {
     xy: [181, 40, 240, 79],
-    trbl: '//*%',
     color: COLORS.OPERATOR
   }
 };
 
 var selected = DEFAULT_SELECTION;
-var prevSelected = DEFAULT_SELECTION;
 var prevNumber  = null;
 var currNumber = null;
 var operator = null;
@@ -370,26 +350,32 @@ function buttonPress(val) {
   }
 }
 
-for (var k in keys) {
-  if (keys.hasOwnProperty(k)) {
-    drawKey(k, keys[k], k == '5');
-  }
-}
-g.setFont('7x11Numeric7Seg', 2.8);
-g.drawString('0', 205, 10);
-/*
-
-function moveDirection(d) {
-  drawKey(selected, keys[selected]);
-  prevSelected = selected;
-  selected = (d === 0 && selected == '0' && prevSelected === '1') ? '1' : keys[selected].trbl[d];
-  drawKey(selected, keys[selected], true);
+function isPressed(k,p) {
+   var xy = keys[k].xy;
+   if (p.x>xy[0] && p.y>xy[1] && p.x<xy[2] && p.y<xy[3]) {
+      drawKey(k, keys[k], true);
+      selected=k;
+      return true;
+   }
+   return false;
 }
 
-setWatch(_ => moveDirection(0), BTN1, {repeat: true, debounce: 100});
-setWatch(_ => moveDirection(2), BTN3, {repeat: true, debounce: 100});
-setWatch(_ => moveDirection(3), BTN4, {repeat: true, debounce: 100});
-setWatch(_ => moveDirection(1), BTN5, {repeat: true, debounce: 100});
-setWatch(_ => buttonPress(selected), BTN2, {repeat: true, debounce: 100});
+FT5206.on("touch",(p)=> {
+  for (var k in keys)
+    if (isPressed(k,p))
+        buttonPress(k.toString());
+});
 
-*/
+FT5206.on("endtouch",()=>{drawKey(selected, keys[selected], false);});
+
+function initdraw(){
+  for (var k in keys) drawKey(k, keys[k], false);
+  g.setFont('7x11Numeric7Seg', 2.8);
+  g.drawString('0', 205, 10);
+}
+
+setTimeout(initdraw,500);
+
+
+
+
