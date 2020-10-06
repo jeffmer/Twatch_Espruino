@@ -105,7 +105,9 @@ if (require("Storage").read("touch.js")){
 }
 
 var ON_TIME = 5;
-var TWATCH = {};
+var TWATCH = {
+    setLCDTimeout:(v)=>{ON_TIME=v;}
+};
 
 function init_power_man() {
     var time_left = ON_TIME;
@@ -137,12 +139,17 @@ function init_power_man() {
     powInterval=setInterval(power_man,1000);
 }
 
-FT5206.on("longtouch", ()=> {reset();});
+FT5206.on("longtouch", ()=> {load("launch.js")});
 
 if (require("Storage").read("lcd.js")){
     eval(require("Storage").read("lcd.js"));
     var g = ST7789();
     brightness(0.3);
+    setTimeout(()=>{
+        if (TOUCH_PIN.read()){init_power_man();}
+    },500);
+}
+    /*
     setTimeout(() => {
         if (TOUCH_PIN.read()){
             g.setRotation(0);
@@ -159,6 +166,7 @@ if (require("Storage").read("lcd.js")){
         }
     },200);
 }
+*/
 
 
  

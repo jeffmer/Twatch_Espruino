@@ -49,9 +49,11 @@ function setButtons(){
   FT5206.on('swipe',(dir)=>{if (dir ==1 || dir ==-1)newFace(dir);});
 }
 
-g.clear();
-startdraw();
-setButtons();
+setTimeout(()=>{
+  g.clear();
+  startdraw();
+  setButtons();
+},500);
 
 TWATCH.on("sleep",(b)=>{if (b) stopdraw(); else startdraw();});
 
