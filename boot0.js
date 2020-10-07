@@ -146,7 +146,7 @@ FT5206.on("longtouch", ()=> {load("launch.js")});
 if (require("Storage").read("lcd.js")){
     eval(require("Storage").read("lcd.js"));
     var g = ST7789();
-    brightness(0.3);
+    brightness(TWATCH.BRIGHT);
     setTimeout(()=>{
         if (TOUCH_PIN.read()){init_power_man();}
     },500);
