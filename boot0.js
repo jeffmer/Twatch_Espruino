@@ -119,7 +119,7 @@ function init_power_man() {
         if (time_left<=0){
            powInterval=clearInterval(powInterval);
            TWATCH.emit("sleep",true);
-           brightness(TWATCH.BRIGHT);
+           brightness(0);
            g.lcd_sleep();
            ESP32.adcPower(false);  //power saving
            ESP32.wifiStart(false);
@@ -132,7 +132,7 @@ function init_power_man() {
            g.lcd_wake();
            if(rtc) rtc.setSYS();
            TWATCH.emit("sleep",false);
-           setTimeout(()=>{brightness(0.3);},200);
+           setTimeout(()=>{brightness(TWATCH.BRIGHT);},200);
            time_left=TWATCH.ON_TIME;
            powInterval=setInterval(power_man,1000); 
         }
