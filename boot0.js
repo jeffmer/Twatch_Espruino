@@ -104,20 +104,22 @@ if (require("Storage").read("touch.js")){
     eval(require("Storage").read("touch.js"));
 }
 
-var ON_TIME = 5;
 var TWATCH = {
-    setLCDTimeout:(v)=>{ON_TIME=v;}
+    ON_TIME: 5,
+    BRIGHT : 0.3,
+    setLCDTimeout:(v)=>{TWATCH.ON_TIME=v;},
+    setLCDBrightness:(v)=>{TWATCH.BRIGHT=v; brightness(v);}
 };
 
 function init_power_man() {
-    var time_left = ON_TIME;
+    var time_left = TWATCH.ON_TIME;
     var powInterval = null;
     function power_man() {
         time_left--;
         if (time_left<=0){
            powInterval=clearInterval(powInterval);
            TWATCH.emit("sleep",true);
-           brightness(0);
+           brightness(TWATCH.BRIGHT);
            g.lcd_sleep();
            ESP32.adcPower(false);  //power saving
            ESP32.wifiStart(false);
@@ -131,11 +133,11 @@ function init_power_man() {
            if(rtc) rtc.setSYS();
            TWATCH.emit("sleep",false);
            setTimeout(()=>{brightness(0.3);},200);
-           time_left=ON_TIME;
+           time_left=TWATCH.ON_TIME;
            powInterval=setInterval(power_man,1000); 
         }
     }
-    FT5206.on('touch',(p)=>{time_left=ON_TIME;});
+    FT5206.on('touch',(p)=>{time_left=TWATCH.ON_TIME;});
     powInterval=setInterval(power_man,1000);
 }
 
