@@ -104,14 +104,24 @@ if (require("Storage").read("touch.js")){
     eval(require("Storage").read("touch.js"));
 }
 
+var s = require("Storage").readJSON("settings.json",1)||{ontime:5, bright:0.3};
+
 var TWATCH = {
     ON_TIME: 5,
     BRIGHT : 0.3,
-    setLCDTimeout:(v)=>{TWATCH.ON_TIME=v;},
-    setLCDBrightness:(v)=>{TWATCH.BRIGHT=v; brightness(v);}
+    setLCDTimeout:(v)=>{ TWATCH.ON_TIME=v;},
+    setLCDBrightness:(v)=>{TWATCH.BRIGHT=v; brightness(v);},
+    init:()=>{
+        var s = require("Storage").readJSON("settings.json",1)||{ontime:5, bright:0.3};
+        TWATCH.ON_TIME=s.ontime;
+        TWATCH.BRIGHT=s.bright;
+    }
 };
 
+TWATCH.init();
+
 function init_power_man() {
+    if (!TWATCH.ONTIME) return;
     var time_left = TWATCH.ON_TIME;
     var powInterval = null;
     function power_man() {
