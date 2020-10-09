@@ -1,6 +1,6 @@
 TWATCH.setLCDTimeout(30);
 const storage = require("Storage");
-const showMenu = eval(s.read("menu.js"));
+const showMenu = eval(storage.read("menu.js"));
 var s = storage.readJSON("settings.json",1)||{ontime:5, bright:0.3};
 
 var mainmenu = {
