@@ -113,18 +113,18 @@
     var drawButton = function(d,sel){
          (sel?g.setColor(0.8,0.8,1.0):g.setColor(0.5,0.5,1.0)).fillRect(d.x1,d.y1,d.x2,d.y2);
          g.setColor(-1).fillPoly(d.poly);
-    }
+    };
     for(var i=0;i<3;i++)drawButton(butdefs[i],false);
     var isPressed = function(p,n) {
         var d = butdefs[n];
-        var bb = (p.x>d.x1 && p.y>d.y1 && p.x<d.x2 && p.y<d.y2); }
+        var bb = (p.x>d.x1 && p.y>d.y1 && p.x<d.x2 && p.y<d.y2);
         if (bb) {selbut=n; drawButton(d,true);}
         return bb;
-    }
+    };
     TWATCH.buttons = function(p){
-      if (isPressed(p,0) l.move(-1);
-      else if (isPressed(p,1) l.select(); 
-      else if (isPressed(p,2) l.move(1);
+      if (isPressed(p,0)) l.move(-1);
+      else if (isPressed(p,1)) l.select(); 
+      else if (isPressed(p,2)) l.move(1);
       else selbut=-1;
     };
     TWATCH.clearbuttons = function(){
