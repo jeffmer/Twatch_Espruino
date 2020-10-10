@@ -1,10 +1,11 @@
 (function(items) {
     var pal = new Uint16Array([0x0000,0x0007,0x02F7,0xFFFF]);
-    var b = Graphics.createArrayBuffer(240,240,2,{msb:true});
+    var b = Graphics.createArrayBuffer(240,180,2,{msb:true});
     var flip = function(){
-      g.drawImage({width:240,height:240,bpp:2,buffer:b.buffer,palette:pal},0,0);
+      g.drawImage({width:240,height:180,bpp:2,buffer:b.buffer,palette:pal},0,20);
     }
     if (TWATCH.buttons) FT5206.removeListener("touch",TWATCH.buttons);
+    if (TWATCH.clearbuttons) FT5206.removeListener("touch",TWATCH.clearbuttons);
     if (!items) return;
     var w = b.getWidth()-9;
     var h = b.getHeight();
@@ -15,8 +16,8 @@
     options.fontHeight=16;
     options.x=0;
     options.x2=w-2;
-    options.y=24;
-    options.y2=220;
+    options.y=0;
+    options.y2=179;
     if (options.selected === undefined)
       options.selected = 0;
     if (!options.fontHeight)
@@ -73,38 +74,8 @@
         }
         b.setFontAlign(-1,-1);
         var more = idx<menuItems.length;      
-        b.drawImage("\b\b\x01\x108|\xFE\x10\x10\x10\x10"/*E.toString(8,8,1,
-          0b00010000,
-          0b00111000,
-          0b01111100,
-          0b11111110,
-          0b00010000,
-          0b00010000,
-          0b00010000,
-          0b00010000
-        )*/,w,40);
-        b.drawImage("\b\b\x01\x10\x10\x10\x10\xFE|8\x10"/*E.toString(8,8,1,
-          0b00010000,
-          0b00010000,
-          0b00010000,
-          0b00010000,
-          0b11111110,
-          0b01111100,
-          0b00111000,
-          0b00010000
-        )*/,w,194);
-        b.drawImage("\b\b\x01\x00\b\f\x0E\xFF\x0E\f\b"/*E.toString(8,8,1,
-          0b00000000,
-          0b00001000,
-          0b00001100,
-          0b00001110,
-          0b11111111,
-          0b00001110,
-          0b00001100,
-          0b00001000
-        )*/,w,116);
         b.setColor(more?-1:0);
-        b.fillPoly([104,220,136,220,120,228]);
+        b.fillPoly([104,172,136,172,120,179]);
         flip();
       },
       select : function(dir) {
@@ -135,12 +106,32 @@
         l.draw();
       }
     };
+    var selbut = -1;
+    var butdefs = [{x1:10,y1:200,x2:59,y2:239,poly:[35,204,20,235,50,235]},
+                   {x1:95,y1:200,x2:144,y2:239,poly:[105,204,135,204,105,235,135,235]},
+                   {x1:180,y1:200,x2:229,y2:239,poly:[190,204,220,204,205,235]}];
+    var drawButton = function(d,sel){
+         (sel?g.setColor(0.8,0.8,1.0):g.setColor(0.5,0.5,1.0)).fillRect(d.x1,d.y1,d.x2,d.y2);
+         g.setColor(-1).fillPoly(d.poly);
+    }
+    for(var i=0;i<3;i++)drawButton(butdefs[i],false);
+    var isPressed = function(p,n) {
+        var d = butdefs[n];
+        var bb = (p.x>d.x1 && p.y>d.y1 && p.x<d.x2 && p.y<d.y2); }
+        if (bb) {selbut=n; drawButton(d,true);}
+        return bb;
+    }
     TWATCH.buttons = function(p){
-      if (p.y<40) l.move(-1);
-      else if (p.y>120 && p.y<140) l.select(); 
-      else if (p.y>200) l.move(1);
+      if (isPressed(p,0) l.move(-1);
+      else if (isPressed(p,1) l.select(); 
+      else if (isPressed(p,2) l.move(1);
+      else selbut=-1;
     };
+    TWATCH.clearbuttons = function(){
+        if (selbut>=0) drawButton(butdefs[selbut],false);
+    }
     l.draw();
     FT5206.on("touch",TWATCH.buttons);
+    FT5206.on("endtouch",TWATCH.clearbuttons);
     return l;  
   })
