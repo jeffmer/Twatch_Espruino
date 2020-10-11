@@ -18,8 +18,8 @@ var mainmenu = {
                   onchange : v => {s.cpufreq=v;}
                 },
     "Time Zone" :{ value : s.timezone,
-                  min:-12,max:12,step:80,
-                  onchange : v => {s.cpufreq=v;}
+                  min:-12,max:12,step:1,
+                  onchange : v => {s.timezone=v;}
                 },
     "Exit" : function() { storage.writeJSON("settings.json",s); load("launch.js");}
 };

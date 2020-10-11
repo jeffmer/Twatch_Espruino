@@ -94,27 +94,32 @@ AXP202.init();
 ESP32.wifiStart(false); // turn off wifi & bluetooth to save power
 //ESP32.bleStart(false);
 
-if (require("Storage").read("rtc.js")){
-    eval(require("Storage").read("rtc.js"));
+var STORAGE = require("Storage");
+
+if (STORAGE.read("rtc.js")){
+    eval(STORAGE.read("rtc.js"));
     var rtc = RTC();
     rtc.setSYS(); //set systemclock from Real-Time Clock;
 }
 
-if (require("Storage").read("touch.js")){
-    eval(require("Storage").read("touch.js"));
+if (STORAGE.read("touch.js")){
+    eval(STORAGE.read("touch.js"));
 }
 
-var s = require("Storage").readJSON("settings.json",1)||{ontime:5, bright:0.3};
+var s = STORAGE.readJSON("settings.json",1)||{ontime:5, bright:0.3, timezone:1};
 
 var TWATCH = {
     ON_TIME: 5,
     BRIGHT : 0.3,
+    TIMEZONE:0,
     setLCDTimeout:(v)=>{TWATCH.ON_TIME=v<5?5:v;},
     setLCDBrightness:(v)=>{TWATCH.BRIGHT=v; brightness(v);},
     init:()=>{
-        var s = require("Storage").readJSON("settings.json",1)||{ontime:5, bright:0.3};
+        var s = STORAGE.readJSON("settings.json",1)||{ontime:5, bright:0.3};
         TWATCH.ON_TIME=s.ontime;
         TWATCH.BRIGHT=s.bright;
+        TWATCH.TIMEZONE=s.timezone;
+        E.setTimeZone(s.timezone);
     }
 };
 
@@ -139,7 +144,9 @@ function init_power_man() {
            AXP202.setDCDC3Voltage(3300);
            //ESP32.setCPUfreq(3); // 240MHz
            g.lcd_wake();
+           E.setTimeZone(0);//rtc stores no offset
            if(rtc) rtc.setSYS();
+           E.setTimeZone(TWATCH.TIMEZONE);
            TWATCH.emit("sleep",false);
            setTimeout(()=>{brightness(TWATCH.BRIGHT);},200);
            time_left=TWATCH.ON_TIME;
@@ -152,32 +159,15 @@ function init_power_man() {
 
 FT5206.on("longtouch", ()=> {load("launch.js")});
 
-if (require("Storage").read("lcd.js")){
-    eval(require("Storage").read("lcd.js"));
+if (STORAGE.read("lcd.js")){
+    eval(STORAGE.read("lcd.js"));
     var g = ST7789();
     brightness(TWATCH.BRIGHT);
     setTimeout(()=>{
         if (TOUCH_PIN.read()){init_power_man();}
     },500);
 }
-    /*
-    setTimeout(() => {
-        if (TOUCH_PIN.read()){
-            g.setRotation(0);
-            g.setColor(0xFFFF);
-            g.setFont("6x8");
-            g.drawString("T-Watch 2020 Espruino "+process.version,20,100);
-            var d = new Date();
-            g.drawString(d.toString().substr(0,15),20,120);
-        } else {
-            init_power_man();
-            var f = require("Storage");
-            var execapp = f.read(".exec");
-            eval(f.read(execapp));
-        }
-    },200);
-}
-*/
+
 
 
  
