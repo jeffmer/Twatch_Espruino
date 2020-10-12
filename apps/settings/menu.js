@@ -1,12 +1,16 @@
 (function(items) {
     var pal = new Uint16Array([0x0000,0x000F,0x03F7,0xFFFF]);
-    var b = Graphics.createArrayBuffer(240,180,2,{msb:true});
+    var b = TWATCH.buffer;
+    if (!b) {
+         b = Graphics.createArrayBuffer(240,180,2,{msb:true});
+         TWATCH.buffer = b;
+    } else b.clear();
     var flip = function(){
       g.drawImage({width:240,height:180,bpp:2,buffer:b.buffer,palette:pal},0,20);
     }
     if (TWATCH.buttons) FT5206.removeListener("touch",TWATCH.buttons);
     if (TWATCH.clearbuttons) FT5206.removeListener("touch",TWATCH.clearbuttons);
-    if (!items){ b.clear(); flip(); return; }
+    if (!items){ flip(); return; }
     var w = b.getWidth()-9;
     var h = b.getHeight();
     var menuItems = Object.keys(items);
