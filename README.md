@@ -4,6 +4,25 @@ Provides an environment for running Espruino apps on a Lilygo TTGO T-watch 2020 
 
 You can see it in action at on Youtube [here](https://youtu.be/j1dHLK7ZZ_4).
 
+### Installation Notes ###
+
+You first need the firmware [espruino_2v07.69_twatch.tgz](https://github.com/jeffmer/Twatch_Espruino/blob/master/espruino_2v07.69_twatch.tgz) which has the changes to Espruino outlined below. You can find instructions for flashing firmware to an ESP32 [here](https://www.espruino.com/ESP32).
+ 
+
+Since the Espruino App Loader does not work over a serial link, javascript has to be uploaded using the WebIDE.
+
+Files need to be renamed as they are uploaded as follows:
+
+`boot0.js` => `.boot0`
+`bootcde.js` => `.bootcde`
+
+Javascript applications :
+
+`xxx.js` => `xxx.app.js`
+
+The easiest way to do this is click on the Device Storage icon of the WebIDE. Choose "Upload a file" and then rename the selected file in the name field that appears before the upload is executed.
+
+
 ### Apps ###
 
 Bangle Apps can be ported fairly easily. The reprogramming required is to adapt the Bangle button controls to the touch screen. You can see my Multiclock app and @fredericrous 's excellent calculator in the video. 
